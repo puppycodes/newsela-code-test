@@ -1,8 +1,10 @@
+// import data
 fetch('data.json').then(
   function(response){
      return response.json();
     }
 ).then(function(jsonData){
+// split array
 
   let pass = _.filter(
     jsonData, ({percent_correct}) => percent_correct >= 0.5
@@ -12,18 +14,21 @@ fetch('data.json').then(
     jsonData, ({percent_correct}) => percent_correct <= 0.5
   );
 
+// get text
   let passWords = _.map(pass, 'text');
   let passSplit = _.chain(passWords)
   .lowerCase()
   .words()
   .value();
 
+// get text
   let failWords = _.map(fail, 'text');
   let failSplit = _.chain(failWords)
   .lowerCase()
   .words()
   .value();
 
+// count items
   const passResult = _.values(_.groupBy(passSplit)).map(d => ({word: d[0], count: d.length, pass: true}));
   let sortedPassResult = _.sortBy(passResult, ['count']);
 
@@ -32,6 +37,8 @@ fetch('data.json').then(
 
   console.log(sortedPassResult);
   console.log(sortedFailResult);
+
+  // take a segment
 
   let slicedPass = _.filter(
     sortedPassResult, ({count}) => count >= 30
@@ -42,6 +49,8 @@ fetch('data.json').then(
   );
   console.log(slicedPass);
   console.log(slicedFail);
+
+  // group by type
 
   let slicedPassText = _.map(slicedPass, 'word');
   let passNouns = nlp(slicedPassText).nouns().out('array');
