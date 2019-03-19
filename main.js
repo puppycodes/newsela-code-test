@@ -12,22 +12,57 @@ fetch('data.json').then(
     jsonData, ({percent_correct}) => percent_correct <= 0.5
   );
 
-
-  console.log(pass);
-  console.log(fail);
-
   let passWords = _.map(pass, 'text');
   let passSplit = _.chain(passWords)
   .lowerCase()
   .words()
   .value();
 
-  console.log(passSplit);
+  let failWords = _.map(fail, 'text');
+  let failSplit = _.chain(failWords)
+  .lowerCase()
+  .words()
+  .value();
 
-const result = _.values(
-  _.groupBy(passSplit)
-).map(d => ({word: d[0], count: d.length}));
+  const passResult = _.values(_.groupBy(passSplit)).map(d => ({word: d[0], count: d.length, pass: true}));
+  let sortedPassResult = _.sortBy(passResult, ['count']);
 
-console.log(result);
+  const failResult = _.values(_.groupBy(failSplit)).map(d => ({word: d[0], count: d.length, pass: false}));
+  let sortedFailResult = _.sortBy(failResult, ['count']);
+
+  console.log(sortedPassResult);
+  console.log(sortedFailResult);
+
+  let slicedPass = _.filter(
+    sortedPassResult, ({count}) => count >= 30
+  );
+
+  let slicedFail = _.filter(
+    sortedFailResult, ({count}) => count >= 30
+  );
+  console.log(slicedPass);
+  console.log(slicedFail);
+
+  let slicedPassText = _.map(slicedPass, 'word');
+  let passNouns = nlp(slicedPassText).nouns().out('array');
+  let passVerbs = nlp(slicedPassText).verbs().out('array');
+  let passAdjectives = nlp(slicedPassText).adjectives().out('array');
+
+  let slicedFailText = _.map(slicedFail, 'word');
+  let failNouns = nlp(slicedPassText).nouns().out('array');
+  let failVerbs = nlp(slicedPassText).verbs().out('array');
+  let failAdjectives = nlp(slicedPassText).adjectives().out('array');
+
+  console.log(passNouns);
+  console.log(passVerbs);
+  console.log(passAdjectives);
+
+  console.log(failNouns);
+  console.log(failVerbs);
+  console.log(failAdjectives);
+
+
+
+
 
 });
